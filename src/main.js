@@ -45,5 +45,6 @@ const server = app.listen(process.env.PORT, () => {
 process.on("SIGTERM", () => {
   server.close(() => {
     console.log("Server closed");
+    process.exit(0);
   });
 });
