@@ -1,0 +1,20 @@
+{
+  "name": "vct-tools-api",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node src/main.js",
+    "format": "prettier --write src/"
+  },
+  "keywords": [],
+  "author": "infinity-atom",
+  "devDependencies": {
+    "prettier": "^3.4.2"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mysql": "^2.18.1"
+  }
+}
