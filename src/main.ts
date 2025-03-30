@@ -22,7 +22,14 @@ dotenv.config();
 
 const app = express();
 app.use(cors({
-  origin: "https://vcttools.net",
+  origin: (origin, callback) => {
+    const allowedOrigins = process.env.ENVIRONMENT === "dev" ? "http://localhost:3000" : "https://vcttools.net";
+    if (origin && (origin === allowedOrigins || !origin)) {
+      callback(null, allowedOrigins);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
 app.use(cookieParser());
