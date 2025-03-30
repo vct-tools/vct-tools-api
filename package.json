@@ -1,20 +1,31 @@
 {
   "name": "vct-tools-api",
   "version": "1.0.0",
+  "type": "module",
   "main": "src/main.js",
   "scripts": {
-    "start": "node src/main.js",
+    "start": "tsc && node dist/main.js",
     "format": "prettier --write src/"
   },
   "keywords": [],
   "author": "infinity-atom",
   "devDependencies": {
-    "prettier": "^3.4.2"
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.13.14",
+    "prettier": "^3.4.2",
+    "typescript": "^5.8.2"
   },
   "dependencies": {
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "mysql": "^2.18.1"
+    "install": "^0.13.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.0",
+    "npm": "^11.2.0"
   }
 }
