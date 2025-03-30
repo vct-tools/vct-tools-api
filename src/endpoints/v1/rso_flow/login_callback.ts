@@ -82,7 +82,9 @@ export default function main(app: Express) {
         res.cookie("auth_token", authToken.generate(userPuuid), {
           maxAge: 1000 * 60 * 60 * 24 * 25,
           httpOnly: true,
-          secure: true
+          secure: process.env.ENVIROMENT != "dev",
+          domain: ".vcttools.net",
+          sameSite: "none"
         });
         res
           .status(302)
@@ -110,7 +112,9 @@ export default function main(app: Express) {
         res.cookie("auth_token", authToken.generate(userPuuid), {
           maxAge: 1000 * 60 * 60 * 24 * 25,
           httpOnly: true,
-          secure: true
+          secure: process.env.ENVIROMENT != "dev",
+          domain: ".vcttools.net",
+          sameSite: "none"
         });
         res
           .status(302)

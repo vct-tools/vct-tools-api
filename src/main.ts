@@ -21,7 +21,10 @@ import * as account_info_v1 from "./endpoints/v1/account/account_info.js";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: "https://vcttools.net",
+  credentials: true
+}));
 app.use(cookieParser());
 
 // Endpoints inclusion
