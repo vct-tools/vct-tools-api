@@ -64,8 +64,8 @@ export default function main(app: Express) {
       ])) as [UserRow[], any];
 
       if (results.length == 0) {
-        connection.query(
-          "INSERT INTO `users` (`id`, `riot_puuid`, `riot_refresh_token`, `riot_id_token`, `riot_access_token`, `account_created`, `token_last_refreshed`, `token_expires_in`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)",
+        await connection.query(
+          "INSERT INTO `users` (`id`, `riot_puuid`, `riot_refresh_token`, `riot_id_token`, `riot_access_token`, `account_created`, `token_last_refreshed`, `token_expires_in`, `email`, `email_on_file`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, '', 0)",
           [
             userPuuid,
             tokens.refresh_token,
@@ -94,7 +94,7 @@ export default function main(app: Express) {
               : "https://vcttools.net/account"
           );
       } else {
-        connection.query(
+        await connection.query(
           "UPDATE `users` SET `riot_puuid` = ?, `riot_refresh_token` = ?, `riot_id_token` = ?, `riot_access_token` = ?, `token_last_refreshed` = ?, `token_expires_in` = ? WHERE `riot_puuid` = ?",
           [
             userPuuid,
