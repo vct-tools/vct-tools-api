@@ -21,7 +21,11 @@ export default async function refreshRiotAccessToken(oldRefreshToken: string): P
     throw new Error("Failed to refresh access token");
   }
 
-  const payload = await data.json() as { access_token: string; refresh_token: string; expires_in: number; };
+  const payload = (await data.json()) as {
+    access_token: string;
+    refresh_token: string;
+    expires_in: number;
+  };
 
   if (payload.access_token && payload.refresh_token && payload.expires_in) {
     return {

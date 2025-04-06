@@ -59,52 +59,29 @@ export default function main(app: Express) {
       });
 
       await connection.connect();
-      const [results] = (await connection.query("SELECT * FROM users WHERE riot_puuid = ?", [
-        userPuuid
-      ])) as [UserRow[], any];
+      const [results] = (await connection.query("SELECT * FROM users WHERE riot_puuid = ?", [userPuuid])) as [UserRow[], any];
 
       if (results.length == 0) {
         await connection.query(
           "INSERT INTO `users` (`id`, `riot_puuid`, `riot_refresh_token`, `riot_id_token`, `riot_access_token`, `account_created`, `token_last_refreshed`, `token_expires_in`, `email`, `email_on_file`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, '', 0)",
-          [
-            userPuuid,
-            tokens.refresh_token,
-            tokens.id_token,
-            tokens.access_token,
-            new Date().toISOString(),
-            new Date().toISOString(),
-            payload.expires_in
-          ]
+          [userPuuid, tokens.refresh_token, tokens.id_token, tokens.access_token, new Date().toISOString(), new Date().toISOString(), payload.expires_in]
         );
 
-        // Success, redirect to account settings
+        // Success, redirect to account settings (as a new user)
         await connection.end();
         res.cookie("auth_token", authToken.generate(userPuuid), {
           maxAge: 1000 * 60 * 60 * 24 * 25,
           httpOnly: true,
           secure: process.env.ENVIROMENT != "dev",
-          domain: ".vcttools.net",
+          domain: process.env.ENVIRONMENT == "dev" ? "localhost" : ".vcttools.net",
           sameSite: "none"
         });
-        res
-          .status(302)
-          .redirect(
-            process.env.ENVIRONMENT == "dev"
-              ? "http://localhost:5173/account"
-              : "https://vcttools.net/account"
-          );
+        res.status(302).redirect(process.env.ENVIRONMENT == "dev" ? "http://localhost:5173/account?newaccount=true" : "https://vcttools.net/account?newaccount=true");
+        return;
       } else {
         await connection.query(
           "UPDATE `users` SET `riot_puuid` = ?, `riot_refresh_token` = ?, `riot_id_token` = ?, `riot_access_token` = ?, `token_last_refreshed` = ?, `token_expires_in` = ? WHERE `riot_puuid` = ?",
-          [
-            userPuuid,
-            tokens.refresh_token,
-            tokens.id_token,
-            tokens.access_token,
-            new Date().toISOString(),
-            payload.expires_in,
-            userPuuid
-          ]
+          [userPuuid, tokens.refresh_token, tokens.id_token, tokens.access_token, new Date().toISOString(), payload.expires_in, userPuuid]
         );
 
         // Success, redirect to account settings
@@ -113,16 +90,11 @@ export default function main(app: Express) {
           maxAge: 1000 * 60 * 60 * 24 * 25,
           httpOnly: true,
           secure: process.env.ENVIROMENT != "dev",
-          domain: ".vcttools.net",
+          domain: process.env.ENVIRONMENT == "dev" ? "localhost" : ".vcttools.net",
           sameSite: "none"
         });
-        res
-          .status(302)
-          .redirect(
-            process.env.ENVIRONMENT == "dev"
-              ? "http://localhost:5173/account"
-              : "https://vcttools.net/account"
-          );
+        res.status(302).redirect(process.env.ENVIRONMENT == "dev" ? "http://localhost:5173/account" : "https://vcttools.net/account");
+        return;
       }
     } catch (e) {
       console.error(e);

@@ -16,7 +16,7 @@ export default function main(app: Express) {
 
       await connection.connect();
 
-      const [results] = await connection.query("SELECT * FROM `articles` ORDER BY `id` DESC LIMIT 25") as [NewsArticleRow[], any];
+      const [results] = (await connection.query("SELECT * FROM `articles` ORDER BY `id` DESC LIMIT 25")) as [NewsArticleRow[], any];
 
       await connection.end();
       res.status(200).json(formatResponse(200, results));
