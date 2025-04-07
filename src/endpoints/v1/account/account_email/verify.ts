@@ -40,7 +40,12 @@ export default function main(app: Express) {
 
       if (selectUserResults.length === 0) {
         // Delete auth token cookie
-        res.clearCookie("auth_token");
+        res.clearCookie("auth_token", {
+          httpOnly: true,
+          secure: process.env.ENVIROMENT != "dev",
+          domain: process.env.ENVIRONMENT == "dev" ? "localhost" : ".vcttools.net",
+          sameSite: "none"
+        });
 
         await connection.end();
         res.status(404).json(formatResponse(404, null, "User not found"));
@@ -63,7 +68,7 @@ export default function main(app: Express) {
       if (emailVerification.verification_code !== userCode) {
         await connection.query("UPDATE `email_codes` SET `attempts_remaining` = `attempts_remaining` - 1 WHERE `for_user_id` = ?", [user.id]);
 
-        const [updatedEmailVerificationResults] = await connection.query("SELECT `attempts_remaining` FROM `email_codes` WHERE `for_user_id` = ?", [user.id]) as [EmailVerificationRow[], any];
+        const [updatedEmailVerificationResults] = (await connection.query("SELECT `attempts_remaining` FROM `email_codes` WHERE `for_user_id` = ?", [user.id])) as [EmailVerificationRow[], any];
         const attempts = updatedEmailVerificationResults[0].attempts_remaining;
 
         if (attempts == 0) {

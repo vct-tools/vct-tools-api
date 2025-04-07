@@ -19,7 +19,7 @@ export async function sendEmail(options: {
   contents: {
     plaintext: string;
     html: string;
-  }
+  };
 }): Promise<SentMessageInfo> {
   return await transporter.sendMail({
     from: `"VCT Tools" <${process.env.ZOHO_EMAIL_USERNAME}>`,

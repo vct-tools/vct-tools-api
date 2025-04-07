@@ -34,7 +34,12 @@ export default function main(app: Express) {
 
       if (results.length === 0) {
         // Delete auth token cookie
-        res.clearCookie("auth_token");
+        res.clearCookie("auth_token", {
+          httpOnly: true,
+          secure: process.env.ENVIROMENT != "dev",
+          domain: process.env.ENVIRONMENT == "dev" ? "localhost" : ".vcttools.net",
+          sameSite: "none"
+        });
 
         await connection.end();
         res.status(404).json(formatResponse(404, null, "User not found"));
@@ -45,12 +50,19 @@ export default function main(app: Express) {
       await connection.query("DELETE FROM `users` WHERE `riot_puuid` = ?", [decoded]);
 
       // Delete auth token cookie
-      res.clearCookie("auth_token");
+      res.clearCookie("auth_token", {
+        httpOnly: true,
+        secure: process.env.ENVIROMENT != "dev",
+        domain: process.env.ENVIRONMENT == "dev" ? "localhost" : ".vcttools.net",
+        sameSite: "none"
+      });
 
       await connection.end();
-      res.status(200).json(formatResponse(200, {
-        deletedPuuid: decoded
-      }));
+      res.status(200).json(
+        formatResponse(200, {
+          deletedPuuid: decoded
+        })
+      );
     } catch (e) {
       console.error(e);
       res.status(500).json(formatResponse(500, null, "Internal server error"));

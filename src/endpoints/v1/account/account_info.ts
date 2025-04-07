@@ -35,7 +35,12 @@ export default function main(app: Express) {
 
       if (results.length === 0) {
         // Delete auth token cookie
-        res.clearCookie("auth_token");
+        res.clearCookie("auth_token", {
+          httpOnly: true,
+          secure: process.env.ENVIROMENT != "dev",
+          domain: process.env.ENVIRONMENT == "dev" ? "localhost" : ".vcttools.net",
+          sameSite: "none"
+        });
 
         await connection.end();
         res.status(404).json(formatResponse(404, null, "User not found"));

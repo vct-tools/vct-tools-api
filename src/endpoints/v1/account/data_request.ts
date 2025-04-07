@@ -40,7 +40,12 @@ export default function main(app: Express) {
 
       if (users.length == 0) {
         // Delete auth token cookie
-        res.clearCookie("auth_token");
+        res.clearCookie("auth_token", {
+          httpOnly: true,
+          secure: process.env.ENVIROMENT != "dev",
+          domain: process.env.ENVIRONMENT == "dev" ? "localhost" : ".vcttools.net",
+          sameSite: "none"
+        });
 
         await connection.end();
         res.status(404).json(formatResponse(404, null, "User not found"));
@@ -99,17 +104,32 @@ export default function main(app: Express) {
         .replace("{{#accountCreationDate}}", new Date(user.account_created).toUTCString())
         .replace("{{#userId}}", user.id.toString());
 
-      const emailPlainText = "STORED PERSONAL DATA REQUEST\n" +
+      const emailPlainText =
+        "STORED PERSONAL DATA REQUEST\n" +
         "\n" +
         "As part of VCT Tools' Privacy Policy, you can request a copy of the data we have stored about you.\n" +
         "\n" +
-        "Riot Games player UUID (Universally Unique Identifier) : " + decoded + "\n" +
-        "Riot Games game name : " + riotPayload.gameName + "\n" +
-        "Riot Games tag line : " + riotPayload.tagLine + "\n" +
-        "Email on file? : " + (user.email_on_file == 0 ? "No" : "Yes") + "\n" +
-        "Email : " + (user.email_on_file == 0 ? "N/A" : user.email) + "\n" +
-        "Account creation date : " + new Date(user.account_created).toUTCString() + "\n" +
-        "VCT Tools user ID : " + user.id + "\n";
+        "Riot Games player UUID (Universally Unique Identifier) : " +
+        decoded +
+        "\n" +
+        "Riot Games game name : " +
+        riotPayload.gameName +
+        "\n" +
+        "Riot Games tag line : " +
+        riotPayload.tagLine +
+        "\n" +
+        "Email on file? : " +
+        (user.email_on_file == 0 ? "No" : "Yes") +
+        "\n" +
+        "Email : " +
+        (user.email_on_file == 0 ? "N/A" : user.email) +
+        "\n" +
+        "Account creation date : " +
+        new Date(user.account_created).toUTCString() +
+        "\n" +
+        "VCT Tools user ID : " +
+        user.id +
+        "\n";
 
       // Send the email
       await sendEmail({

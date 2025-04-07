@@ -47,7 +47,7 @@ export default function main(app: Express) {
         res.status(400).json(formatResponse(400, null, "No email provided"));
         return;
       }
-      
+
       // Check if the email is valid
       if (!EmailValidator.validate(email)) {
         await connection.end();
@@ -60,7 +60,12 @@ export default function main(app: Express) {
 
       if (selectUserResults.length === 0) {
         // Delete auth token cookie
-        res.clearCookie("auth_token");
+        res.clearCookie("auth_token", {
+          httpOnly: true,
+          secure: process.env.ENVIROMENT != "dev",
+          domain: process.env.ENVIRONMENT == "dev" ? "localhost" : ".vcttools.net",
+          sameSite: "none"
+        });
 
         await connection.end();
         res.status(404).json(formatResponse(404, null, "User not found"));
